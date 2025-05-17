@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netlify Go Functions 데모</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+        }
+        .btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="card w-full max-w-2xl p-8 text-center">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6">Netlify Go Functions</h1>
+        <p class="text-gray-600 mb-8 text-lg">
+            Netlify Functions를 사용하여 Go로 구현된 서버리스 함수를 배포해보세요.
+        </p>
+        
+        <div class="bg-white rounded-lg p-6 mb-8 shadow-inner">
+            <pre id="response" class="text-left bg-gray-100 p-4 rounded-md overflow-x-auto">
+                버튼을 클릭하여 API를 테스트하세요.
+            </pre>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onclick="testApi()" class="btn text-white font-medium py-3 px-6 rounded-lg">
+                API 테스트하기
+            </button>
+            <a href="https://github.com/yourusername/netlify-go-functions" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 text-center">
+                GitHub에서 보기
+            </a>
+        </div>
+        
+        <div class="mt-10 pt-6 border-t border-gray-200">
+            <p class="text-gray-500 text-sm">
+                Netlify Functions와 Go를 사용한 서버리스 애플리케이션 예제
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function testApi() {
+            const responseElement = document.getElementById('response');
+            responseElement.textContent = '요청 중...';
+            
+            try {
+                const response = await fetch('/.netlify/functions/hello');
+                const data = await response.json();
+                responseElement.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseElement.textContent = `오류 발생: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
