@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netlify Go Functions 데모</title>
+    <title>Clova Extension LLM 테스트</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
@@ -14,66 +14,212 @@
         }
         .card {
             backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
-        }
-        .btn {
-            transition: all 0.3s ease;
+        .btn-primary {
             background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            transition: all 0.3s ease;
         }
-        .btn:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .typing {
+            border-right: 2px solid;
+            animation: typing 1s steps(40, end), blink .75s step-end infinite;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #000; }
         }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
-    <div class="card w-full max-w-2xl p-8 text-center">
-        <h1 class="text-4xl font-bold text-gray-800 mb-6">Netlify Go Functions</h1>
-        <p class="text-gray-600 mb-8 text-lg">
-            Netlify Functions를 사용하여 Go로 구현된 서버리스 함수를 배포해보세요.
+    <div class="card w-full max-w-3xl p-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2 text-center">Clova Extension LLM 테스트</h1>
+        <p class="text-gray-600 mb-6 text-center">
+            Clova Extension에서 사용할 LLM API를 테스트해보세요.
         </p>
         
-        <div class="bg-white rounded-lg p-6 mb-8 shadow-inner">
-            <pre id="response" class="text-left bg-gray-100 p-4 rounded-md overflow-x-auto">
-                버튼을 클릭하여 API를 테스트하세요.
-            </pre>
+        <div class="mb-6">
+            <label for="question" class="block text-sm font-medium text-gray-700 mb-2">질문 입력</label>
+            <div class="flex gap-2">
+                <input 
+                    type="text" 
+                    id="question" 
+                    placeholder="질문을 입력하세요..." 
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    onkeypress="if(event.key === 'Enter') askQuestion()"
+                >
+                <button 
+                    onclick="askQuestion()" 
+                    class="btn-primary text-white font-medium py-2 px-6 rounded-lg whitespace-nowrap"
+                    id="askButton"
+                >
+                    질문하기
+                </button>
+            </div>
         </div>
-        
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onclick="testApi()" class="btn text-white font-medium py-3 px-6 rounded-lg">
-                API 테스트하기
-            </button>
-            <a href="https://github.com/yourusername/netlify-go-functions" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 text-center">
-                GitHub에서 보기
-            </a>
+
+        <div class="bg-white rounded-lg p-6 shadow-inner mb-6">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-medium text-gray-800">응답 결과</h2>
+                <span id="status" class="text-sm text-gray-500">대기 중</span>
+            </div>
+            <div id="response" class="min-h-32 p-4 bg-gray-50 rounded-md text-gray-800 whitespace-pre-wrap">
+                질문을 입력하고 "질문하기" 버튼을 클릭하세요.
+            </div>
         </div>
-        
-        <div class="mt-10 pt-6 border-t border-gray-200">
-            <p class="text-gray-500 text-sm">
-                Netlify Functions와 Go를 사용한 서버리스 애플리케이션 예제
-            </p>
+
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h2a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">테스트 방법</h3>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <p>1. 질문을 입력하고 "질문하기" 버튼을 클릭하세요.</p>
+                        <p>2. 응답이 완료되면 결과가 표시됩니다.</p>
+                        <p>3. 엔터 키를 눌러서도 질문을 제출할 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        async function testApi() {
+        async function askQuestion() {
+            const questionInput = document.getElementById('question');
             const responseElement = document.getElementById('response');
-            responseElement.textContent = '요청 중...';
+            const statusElement = document.getElementById('status');
+            const askButton = document.getElementById('askButton');
+            
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                alert('질문을 입력해주세요.');
+                return;
+            }
+            
+            // UI 업데이트
+            askButton.disabled = true;
+            askButton.innerHTML = '처리 중...';
+            statusElement.textContent = '응답 대기 중...';
+            responseElement.textContent = '답변을 생성하고 있습니다...';
             
             try {
-                const response = await fetch('/.netlify/functions/hello');
+                // Clova Extension 요청 형식에 맞게 요청 생성
+                const requestData = {
+                    version: "0.1.0",
+                    session: {
+                        new: false,
+                        sessionAttributes: {},
+                        sessionId: generateUUID(),
+                        user: {
+                            userId: "test-user",
+                            accessToken: "test-access-token"
+                        }
+                    },
+                    context: {
+                        System: {
+                            application: {
+                                applicationId: "com.example.extension.llm"
+                            },
+                            user: {
+                                userId: "test-user",
+                                accessToken: "test-access-token"
+                            },
+                            device: {
+                                deviceId: generateUUID()
+                            }
+                        }
+                    },
+                    request: {
+                        type: "IntentRequest",
+                        intent: {
+                            name: "AskLLMIntent",
+                            slots: {
+                                question: {
+                                    name: "question",
+                                    value: question
+                                }
+                            }
+                        }
+                    }
+                };
+
+                const response = await fetch('/.netlify/functions/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
-                responseElement.textContent = JSON.stringify(data, null, 2);
+                
+                // 응답 처리
+                if (data.response && data.response.outputSpeech && data.response.outputSpeech.values) {
+                    const answer = data.response.outputSpeech.values.value;
+                    typeText(responseElement, answer);
+                } else {
+                    responseElement.textContent = '올바르지 않은 응답 형식입니다.';
+                    console.error('Unexpected response format:', data);
+                }
+                
+                statusElement.textContent = '응답 완료';
+                
             } catch (error) {
+                console.error('Error:', error);
                 responseElement.textContent = `오류 발생: ${error.message}`;
+                statusElement.textContent = '오류 발생';
+            } finally {
+                askButton.disabled = false;
+                askButton.textContent = '질문하기';
             }
+        }
+        
+        // 타이핑 효과를 주는 함수
+        function typeText(element, text) {
+            let i = 0;
+            const speed = 10; // 타이핑 속도 (밀리초)
+            element.textContent = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('typing');
+                }
+            }
+            
+            element.classList.add('typing');
+            type();
+        }
+        
+        // UUID 생성 함수
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
         }
     </script>
 </body>
