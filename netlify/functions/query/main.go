@@ -115,8 +115,8 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 					Content: "You are a helpful assistant that provides clear and concise answers in Korean.",
 				},
 				{
-					Role:    openai.ChatMessageRoleFunction,
-					Content: "TTS가 답변을 잘 할 수 있도록 이모티콘은 쓰지 않고, 영어나 숫자는 한글로 노말라이즈 하여 적절하게 발화할 수 있도록 해줘.",
+					Role:    openai.ChatMessageRoleSystem,
+					Content: "TTS가 발화를 잘 할 수 있도록 이모티콘은 쓰지 않고, 영어나 숫자는 한글로 노말라이즈 하여 적절하게 발화할 수 있도록 해줘.",
 				},
 				{
 					Role:    openai.ChatMessageRoleUser,
